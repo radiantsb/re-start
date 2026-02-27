@@ -38,7 +38,7 @@ let defaultSettings = {
     forecastMode: 'hourly',
     linksPerColumn: 4,
     linkTarget: '_self',
-    showLinkIcons: true,
+    linkIconMode: 'icons',
     links: [
         { title: 'gmail', url: 'https://mail.google.com', icon: 'gmail' },
         {
@@ -94,6 +94,11 @@ function loadSettings() {
             const merged = { ...defaultSettings, ...parsed }
             if (!merged.customThemeColors) {
                 merged.customThemeColors = { ...defaultCustomColors }
+            }
+            // migrate old showLinkIcons boolean to linkIconMode
+            if ('showLinkIcons' in parsed) {
+                merged.linkIconMode = parsed.showLinkIcons === false ? 'arrow' : 'icons'
+                delete merged.showLinkIcons
             }
             return merged
         }

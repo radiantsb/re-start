@@ -30,6 +30,13 @@
     let signingIn = $state(false)
     let signInError = $state('')
 
+    function googleSignInLabel() {
+        if (settings.googleTasksSignedIn) return 'sign out'
+        if (signInError) return signInError
+        if (signingIn) return 'signing in...'
+        return 'sign in with google'
+    }
+
     async function handleGoogleSignIn() {
         try {
             signingIn = true
@@ -139,6 +146,13 @@
         }
         reader.readAsText(file)
         event.target.value = ''
+    }
+
+    function setCustomColor(key, value) {
+        settings.customThemeColors = {
+            ...settings.customThemeColors,
+            [key]: value,
+        }
     }
 
     const customColorLabels = [
@@ -312,25 +326,7 @@
                                 bind:group={settings.currentTheme}
                                 value={themeName}
                             >
-                                {#if themeName === 'custom'}
-                                    <!-- <div class="theme-preview">
-										<div
-											style="background-color: {settings
-												.customThemeColors?.bg1 ??
-												defaultCustomColors.bg1}"
-										></div>
-										<div
-											style="background-color: {settings
-												.customThemeColors?.txt4 ??
-												defaultCustomColors.txt4}"
-										></div>
-										<div
-											style="background-color: {settings
-												.customThemeColors?.txt2 ??
-												defaultCustomColors.txt2}"
-										></div>
-									</div> -->
-                                {:else}
+                                {#if themeName !== 'custom'}
                                     <div class="theme-preview">
                                         <div
                                             style="background-color: {themes[
@@ -364,23 +360,13 @@
                                     type="color"
                                     id="color-{key}"
                                     value={settings.customThemeColors[key]}
-                                    oninput={(e) => {
-                                        settings.customThemeColors = {
-                                            ...settings.customThemeColors,
-                                            [key]: e.target.value,
-                                        }
-                                    }}
+                                    oninput={(e) => setCustomColor(key, e.target.value)}
                                 />
                                 <label for="color-{key}">{label}</label>
                                 <input
                                     type="text"
                                     value={settings.customThemeColors[key]}
-                                    oninput={(e) => {
-                                        settings.customThemeColors = {
-                                            ...settings.customThemeColors,
-                                            [key]: e.target.value,
-                                        }
-                                    }}
+                                    oninput={(e) => setCustomColor(key, e.target.value)}
                                     class="color-text"
                                 />
                             </div>
@@ -467,13 +453,7 @@
                             : handleGoogleSignIn}
                         disabled={signingIn}
                     >
-                        [{settings.googleTasksSignedIn
-                            ? 'sign out'
-                            : signInError
-                              ? signInError
-                              : signingIn
-                                ? 'signing in...'
-                                : 'sign in with google'}]
+                        [{googleSignInLabel()}]
                     </button>
                 </div>
             {/if}
@@ -541,11 +521,7 @@
                         disabled={locationLoading}
                     >
                         <span class="bracket">[</span><span class="action-text"
-                            >{locationError
-                                ? locationError
-                                : locationLoading
-                                  ? 'getting location...'
-                                  : 'use current location'}</span
+                            >{locationError || (locationLoading ? 'getting location...' : 'use current location')}</span
                         ><span class="bracket">]</span>
                     </button>
                 </div>
@@ -614,10 +590,19 @@
             </div>
             <div class="group">
                 <div class="setting-label">link icons</div>
-                <div class="checkbox-group">
-                    <Checkbox bind:checked={settings.showLinkIcons}>
+                <div class="radio-group">
+                    <RadioButton
+                        bind:group={settings.linkIconMode}
+                        value="icons"
+                    >
                         show icons
-                    </Checkbox>
+                    </RadioButton>
+                    <RadioButton
+                        bind:group={settings.linkIconMode}
+                        value="arrow"
+                    >
+                        show &gt;
+                    </RadioButton>
                 </div>
             </div>
             <div class="group">
@@ -674,7 +659,7 @@
                                             guessIconSlug(link.url)}"
                                     ></span>
                                 {:else}
-                                    <span class="icon-placeholder">?</span>
+                                    <span class="icon-placeholder">></span>
                                 {/if}
                             </button>
                             <input

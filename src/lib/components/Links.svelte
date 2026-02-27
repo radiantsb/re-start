@@ -28,7 +28,7 @@
             <div class="column">
                 {#each column as link}
                     {@const slug =
-                        settings.showLinkIcons !== false
+                        settings.linkIconMode === 'icons'
                             ? getIconSlug(link)
                             : null}
                     <a

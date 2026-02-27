@@ -9,7 +9,7 @@
     let searchInput = $state(null)
 
     const allSlugs = Array.from(validSlugs)
-    const MAX_RESULTS = 60
+    const MAX_RESULTS = 56
 
     let filtered = $derived.by(() => {
         const q = search.trim().toLowerCase()
@@ -77,7 +77,7 @@
 
 <style>
     .icon-picker {
-        padding: 0.5rem 0;
+        padding: 1rem 0;
     }
     .search-input {
         width: 100%;
@@ -114,12 +114,11 @@
     }
     .no-results {
         color: var(--txt-3);
-        padding: 0.5rem;
+        padding-bottom: 0.5rem;
         grid-column: 1 / -1;
     }
     .clear-btn {
-        margin-top: 0.5rem;
-        font-size: 0.875rem;
+        margin-top: 0.25rem;
     }
     .bracket {
         color: var(--txt-3);
