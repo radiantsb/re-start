@@ -7,11 +7,11 @@ features:
 - task list with multiple backend options (local, todoist, google tasks (chrome only))
 - smart task input with natural date and project parsing
 - weather summary (from open-meteo)
-- customizable quick links
+- customizable quick links with icons
 - stats (load time, ping, fps, viewport size)
 - multiple color themes
 - custom css support
-- lightweight & performant (~100kb including fonts, loads in <50ms)
+- performant & lightweight (loads in <50ms)
 
 <img alt="screenshot" src="files/screenshot.png" />
 
