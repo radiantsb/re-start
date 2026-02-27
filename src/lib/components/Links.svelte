@@ -1,6 +1,6 @@
 <script>
     import { settings } from '../stores/settings-store.svelte.js'
-    import { guessIconSlug, isValidSlug } from '../utils/link-icons.js'
+    import { isValidSlug } from '../utils/link-icons.js'
 
     const columns = $derived.by(() => {
         const result = []
@@ -13,32 +13,25 @@
         }
         return result
     })
-
-    function getIconSlug(link) {
-        if (link.icon && isValidSlug(link.icon)) return link.icon
-        if (link.url) return guessIconSlug(link.url)
-        return null
-    }
 </script>
 
 <div class="panel-wrapper">
     <div class="panel-label">links</div>
     <div class="panel">
         {#each columns as column}
-            <div class="column">
+            <div
+                class="column"
+                class:icon-mode={settings.linkIconMode === 'icons'}
+            >
                 {#each column as link}
-                    {@const slug =
-                        settings.linkIconMode === 'icons'
-                            ? getIconSlug(link)
-                            : null}
                     <a
                         href={link.url}
                         target={settings.linkTarget}
                         rel="noopener noreferrer"
                         class="link"
                     >
-                        {#if slug}
-                            <span class="icon si si-{slug}"></span>
+                        {#if settings.linkIconMode === 'icons' && isValidSlug(link.icon)}
+                            <span class="icon si si-{link.icon}"></span>
                         {:else}
                             <span class="prefix">></span>
                         {/if}
@@ -63,9 +56,12 @@
     .prefix,
     .icon {
         display: inline-block;
-        width: 1.25rem;
         color: var(--txt-3);
         text-align: center;
+    }
+    .icon-mode .prefix,
+    .icon {
+        width: 1.25rem;
     }
     .icon {
         font-size: 0.875rem;

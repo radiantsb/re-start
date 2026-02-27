@@ -1,9 +1,8 @@
 <script>
     import { validSlugs } from '../utils/simple-icons-slugs.js'
-    import { guessIconSlug } from '../utils/link-icons.js'
     import { tick } from 'svelte'
 
-    let { icon = '', url = '', onselect } = $props()
+    let { icon = '', onselect } = $props()
 
     let search = $state('')
     let searchInput = $state(null)
@@ -20,16 +19,6 @@
             if (results.length >= MAX_RESULTS) break
         }
         return results
-    })
-
-    let guessed = $derived(guessIconSlug(url))
-
-    let suggestions = $derived.by(() => {
-        if (search.trim()) return filtered
-        const top = []
-        if (guessed) top.push(guessed)
-        const rest = filtered.filter((s) => !top.includes(s))
-        return [...top, ...rest].slice(0, MAX_RESULTS)
     })
 
     export async function focusInput() {
@@ -52,17 +41,17 @@
         class="search-input"
     />
     <div class="icon-grid">
-        {#each suggestions as slug}
+        {#each filtered as slug}
             <button
                 class="icon-option"
-                class:active={slug === icon || (!icon && slug === guessed)}
+                class:active={slug === icon}
                 title={slug}
                 onclick={() => onselect(slug)}
             >
                 <span class="si si-{slug}"></span>
             </button>
         {/each}
-        {#if suggestions.length === 0}
+        {#if filtered.length === 0}
             <span class="no-results">no icons found</span>
         {/if}
     </div>

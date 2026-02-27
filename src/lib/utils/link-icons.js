@@ -80,6 +80,14 @@ export function isValidSlug(slug) {
     return validSlugs.has(slug)
 }
 
+export function extractDomain(url) {
+    try {
+        return new URL(url).hostname
+    } catch {
+        return ''
+    }
+}
+
 export function guessIconSlug(url) {
     try {
         const hostname = new URL(url).hostname

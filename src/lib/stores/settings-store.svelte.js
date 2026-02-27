@@ -98,7 +98,8 @@ function loadSettings() {
             }
             // migrate old showLinkIcons boolean to linkIconMode
             if ('showLinkIcons' in parsed) {
-                merged.linkIconMode = parsed.showLinkIcons === false ? 'arrow' : 'icons'
+                merged.linkIconMode =
+                    parsed.showLinkIcons === false ? 'arrow' : 'icons'
                 delete merged.showLinkIcons
             }
             return merged

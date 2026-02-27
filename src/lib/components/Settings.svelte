@@ -15,10 +15,11 @@
     import Checkbox from './ui/Checkbox.svelte'
     import { createTaskBackend } from '../backends/index.js'
     import { isChrome } from '../utils/browser-detect.js'
-    import { guessIconSlug, isValidSlug } from '../utils/link-icons.js'
+    import { guessIconSlug, isValidSlug, extractDomain } from '../utils/link-icons.js'
     import IconPicker from './IconPicker.svelte'
 
     let { showSettings = false, closeSettings } = $props()
+    const prevDomains = new WeakMap()
 
     // Check if Google Tasks is available (Chrome only)
     const googleTasksAvailable = isChrome()
@@ -82,6 +83,21 @@
         } else {
             iconPickerOpen = index
             tick().then(() => iconPickerRef?.focusInput())
+        }
+    }
+
+    function initPrevDomain(link) {
+        if (!prevDomains.has(link)) {
+            prevDomains.set(link, extractDomain(link.url))
+        }
+    }
+
+    function handleUrlChange(link) {
+        const oldDomain = prevDomains.get(link) ?? ''
+        const newDomain = extractDomain(link.url)
+        if (oldDomain !== newDomain) {
+            link.icon = guessIconSlug(link.url) || ''
+            prevDomains.set(link, newDomain)
         }
     }
 
@@ -310,9 +326,9 @@
                 <div class="checkbox-group">
                     <Checkbox bind:checked={settings.showClock}>clock</Checkbox>
                     <Checkbox bind:checked={settings.showStats}>stats</Checkbox>
-                    <Checkbox bind:checked={settings.showWeather}>
-                        weather
-                    </Checkbox>
+                    <Checkbox bind:checked={settings.showWeather}
+                        >weather</Checkbox
+                    >
                     <Checkbox bind:checked={settings.showTasks}>tasks</Checkbox>
                     <Checkbox bind:checked={settings.showLinks}>links</Checkbox>
                 </div>
@@ -411,12 +427,9 @@
             <div class="group">
                 <div class="setting-label">task backend</div>
                 <div class="radio-group">
-                    <RadioButton
-                        bind:group={settings.taskBackend}
-                        value="local"
+                    <RadioButton bind:group={settings.taskBackend} value="local"
+                        >local</RadioButton
                     >
-                        local
-                    </RadioButton>
                     <RadioButton
                         bind:group={settings.taskBackend}
                         value="todoist"
@@ -486,12 +499,9 @@
                     >
                         manual
                     </RadioButton>
-                    <RadioButton
-                        bind:group={settings.locationMode}
-                        value="auto"
+                    <RadioButton bind:group={settings.locationMode} value="auto"
+                        >auto</RadioButton
                     >
-                        auto
-                    </RadioButton>
                 </div>
             </div>
 
@@ -535,12 +545,12 @@
             <div class="group">
                 <div class="setting-label">time format</div>
                 <div class="radio-group">
-                    <RadioButton bind:group={settings.timeFormat} value="12hr">
-                        12 hour
-                    </RadioButton>
-                    <RadioButton bind:group={settings.timeFormat} value="24hr">
-                        24 hour
-                    </RadioButton>
+                    <RadioButton bind:group={settings.timeFormat} value="12hr"
+                        >12 hour</RadioButton
+                    >
+                    <RadioButton bind:group={settings.timeFormat} value="24hr"
+                        >24 hour</RadioButton
+                    >
                 </div>
             </div>
             <div class="group">
@@ -571,12 +581,12 @@
             <div class="group">
                 <div class="setting-label">speed format</div>
                 <div class="radio-group">
-                    <RadioButton bind:group={settings.speedUnit} value="mph">
-                        mph
-                    </RadioButton>
-                    <RadioButton bind:group={settings.speedUnit} value="kmh">
-                        kmh
-                    </RadioButton>
+                    <RadioButton bind:group={settings.speedUnit} value="mph"
+                        >mph</RadioButton
+                    >
+                    <RadioButton bind:group={settings.speedUnit} value="kmh"
+                        >kmh</RadioButton
+                    >
                 </div>
             </div>
             <div class="group">
@@ -636,6 +646,7 @@
                             role="none"
                         ></div>
 
+                        {@const _ = initPrevDomain(link)}
                         <div
                             class="link"
                             class:dragging={draggedIndex === index}
@@ -652,17 +663,12 @@
                             >
                             <button
                                 class="icon-btn"
-                                title={link.icon ||
-                                    guessIconSlug(link.url) ||
-                                    'pick icon'}
+                                title={link.icon || 'pick icon'}
                                 onclick={() => toggleIconPicker(index)}
                                 draggable="false"
                             >
-                                {#if isValidSlug(link.icon) || guessIconSlug(link.url)}
-                                    <span
-                                        class="si si-{link.icon ||
-                                            guessIconSlug(link.url)}"
-                                    ></span>
+                                {#if isValidSlug(link.icon)}
+                                    <span class="si si-{link.icon}"></span>
                                 {:else}
                                     <span class="icon-placeholder">></span>
                                 {/if}
@@ -677,6 +683,7 @@
                             <input
                                 type="url"
                                 bind:value={link.url}
+                                onchange={() => handleUrlChange(link)}
                                 placeholder="https://example.com"
                                 class="link-input"
                                 draggable="false"
@@ -692,7 +699,6 @@
                             <IconPicker
                                 bind:this={iconPickerRef}
                                 icon={link.icon}
-                                url={link.url}
                                 onselect={(slug) => {
                                     link.icon = slug
                                     iconPickerOpen = null

@@ -110,7 +110,11 @@
     <div class="panel-label">stats</div>
     <div class="panel">
         <div>load <span class="bright">{loadTime} ms</span></div>
-        <div>ping <span class="bright">{settings.pingUrl ? (latency || '?') + ' ms' : '-'}</span></div>
+        <div>
+            ping <span class="bright"
+                >{settings.pingUrl ? (latency || '?') + ' ms' : '-'}</span
+            >
+        </div>
         <div>fps <span class="bright">{fps}</span></div>
         <div>
             <span class="bright">{viewportWidth}</span> x

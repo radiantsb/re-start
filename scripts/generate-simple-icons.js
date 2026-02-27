@@ -10,7 +10,10 @@ import { fileURLToPath } from 'url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const icons = JSON.parse(
-    readFileSync(join(root, 'node_modules/simple-icons-font/font/simple-icons.json'), 'utf-8'),
+    readFileSync(
+        join(root, 'node_modules/simple-icons-font/font/simple-icons.json'),
+        'utf-8'
+    )
 )
 
 // --- Generate CSS ---
@@ -31,7 +34,12 @@ const cssLines = [
 ]
 
 for (const icon of icons) {
-    cssLines.push(``, `.si-${icon.slug}::before {`, `    content: '\\${icon.code}';`, `}`)
+    cssLines.push(
+        ``,
+        `.si-${icon.slug}::before {`,
+        `    content: '\\${icon.code}';`,
+        `}`
+    )
 }
 
 const cssPath = join(root, 'src/lib/styles/simple-icons.css')
