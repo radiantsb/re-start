@@ -730,7 +730,6 @@
                                 draggable="false"
                                 oninput={(e) => {
                                     link.hotkey = e.target.value.slice(-1)
-                                    saveSettings(settings)
                                 }}
                             />
                             <button
