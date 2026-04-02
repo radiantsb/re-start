@@ -115,20 +115,22 @@
     }
 
     function handleKeydown(event) {
+        if (!showSettings) return
+
+        if (event.defaultPrevented) return
+
+        const target = event.target
+        const isTypingField =
+            target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.isContentEditable
+
+        if (isTypingField) return
+
         if (event.key === 'Escape') {
             handleClose()
             return
         }
-
-        if (!showSettings) return
-
-        const target = event.target
-        const isTypingField = target.tagName === 'INPUT' || 
-                              target.tagName === 'TEXTAREA' || 
-                              target.isContentEditable
-
-        if (isTypingField) return
-
         const key = event.key
         const link = settings.links.find((l) => l.hotkey === key)
         if (link && link.url) {
