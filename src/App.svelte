@@ -48,7 +48,22 @@
         if (link && link.url) {
             event.preventDefault()
             event.stopPropagation()
-            window.open(link.url, settings.linkTarget || '_self')
+
+            const effectiveTarget =
+                settings.linkTarget === '_blank' ? '_blank' : '_self'
+
+            if (effectiveTarget === '_self') {
+                window.location.assign(link.url)
+            } else {
+                const newWindow = window.open(
+                    link.url,
+                    '_blank',
+                    'noopener,noreferrer'
+                )
+                if (newWindow) {
+                    newWindow.opener = null
+                }
+            }
         }
     }
 
